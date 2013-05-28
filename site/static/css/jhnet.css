@@ -1,0 +1,61 @@
+html, body {
+	height : 100%;
+}
+
+div.masthead{
+	background-color : rgb(234,234,234);
+	margin-bottom : 10px;
+	
+	border-color : #ccc;
+	border-width : 1px;
+	border-bottom-style : solid;
+}
+
+@media (max-width: 767px) {
+	div.masthead{
+		margin-left : -20px;
+		margin-right : -20px;
+		padding-left : -20px;
+		padding-right : -20px;
+	}
+}
+
+div.masthead .nav{
+	margin-top : 20px;
+	margin-bottom : 20px;
+}
+
+div.masthead .brand{
+	display : inline-block;
+	margin-top : 20px;
+	margin-left : 5px;
+}
+div.masthead hr {
+	display : none;
+}
+
+div.content {
+	min-height : 50%;
+}
+
+.sort-asc,
+.sort-dsc {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-top: 1px;
+  *margin-right: .3em;
+  line-height: 14px;
+  vertical-align: text-top;
+  background-image: url("../img/glyphicons-halflings.png");
+  background-position: 14px 14px;
+  background-repeat: no-repeat;
+}
+
+.sort-asc {
+	background-position: -312px -96px;
+}
+
+.sort-dsc {
+  background-position: -289px -96px;
+}
