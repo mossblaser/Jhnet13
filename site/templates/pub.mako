@@ -8,7 +8,7 @@
 				<li class="nav-header">Table of Contents</li>
 				<ul class="nav nav-list">
 				% for toc_level, toc_entry, toc_anchor in toc:
-					<li><a href="#${toc_anchor}">${"&nbsp;"*(toc_level-1)*4}${toc_entry}</a></li>
+					<li style="padding-left:${toc_level-1}em"><a href="#${toc_anchor}">${toc_entry}</a></li>
 				% endfor
 				</ul>
 			</ul>
