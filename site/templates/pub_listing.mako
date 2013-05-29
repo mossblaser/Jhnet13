@@ -14,8 +14,8 @@ ${readme}
 		</ul>
 	</div>
 	
-	% for title, subtitle, url, img, img_alt, abstract, pub_tags in publications:
-		<div class="listing span10">
+	<div class="listing span10">
+		% for title, subtitle, url, img, img_alt, abstract, pub_tags in publications:
 			<div class="media">
 				% if img is not None:
 					<a class="pull-left" href="${url}">
@@ -25,7 +25,12 @@ ${readme}
 					</a>
 				% endif
 				<div class="media-body">
-					<h2 class="media-heading"><a href="${url}">${title} <small>${subtitle}</small></a></h2>
+					<h2 class="media-heading"><a href="${url}">
+						${title}
+						% if subtitle is not None:
+							<small>${subtitle}</small>
+						% endif
+					</a></h2>
 					
 					${abstract}
 					
@@ -36,6 +41,6 @@ ${readme}
 					</ul>
 				</div>
 			</div>
-		</div>
-	% endfor
+		% endfor
+	</div>
 </div>

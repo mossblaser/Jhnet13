@@ -7,7 +7,9 @@ Markdown extension which does toc extraction.
 from markdown.treeprocessors import Treeprocessor
 from markdown.extensions     import Extension
 
-from markdown.extensions.headerid import slugify, unique
+from markdown.extensions.headerid import slugify
+
+from util import unique
 
 class ToCExtractorTreeprocessor(Treeprocessor):
 	
@@ -37,12 +39,7 @@ class ToCExtractorTreeprocessor(Treeprocessor):
 		
 		for heading in headings:
 			# Pick an ID
-			base_id = slugify(heading.text, "-")
-			id = base_id
-			cnt = 1
-			while id in ids:
-				id = "%s_%d"%(base_id, cnt)
-				cnt += 1
+			id = unique(slugify(heading.text, "-"), ids)
 			
 			# Assign the ID to the heading
 			heading.attrib["id"] = id

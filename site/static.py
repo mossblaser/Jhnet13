@@ -105,7 +105,11 @@ class _StaticBase(object):
 		try:
 			file_path = "%s%s"%(self.path_base, path)
 			web.header("Content-Type", mimetypes.guess_type(file_path)[0])
-			return open(file_path, "rb").read()
+			with open(file_path, "rb") as f:
+				data = True
+				while data:
+					data = f.read(100)
+					yield data
 		except IOError:
 			raise web.notfound()
 

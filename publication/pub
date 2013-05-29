@@ -1,0 +1,89 @@
+#!/bin/bash
+
+# Wrapper around the publication scripts to upload publications to Jhnet
+#
+# Usage:
+#
+#  pub pub_target publication.md [publication-url]
+#
+# Where:
+#   pub_target is "-" for a local preview or the name of a publication type on
+#   the website.
+#
+#   publication.md is a markdown file containing the publication to be compiled.
+#
+#   publication-url is optionally the url to use for the publication (if not
+#   specified, the basename without the extension of the markdown file is used).
+
+################################################################################
+# Constants
+################################################################################
+
+WEB_DIR="jhnet.co.uk:jhnet.co.uk"
+WEB_DIR="../site"
+WEB_URL="http://www.jhnet.co.uk"
+
+# Tempoary working directory
+TMP_DIR="$(mktemp -d "/tmp/pub_XXXXX")"
+trap "rm -rf $TMP_DIR" EXIT
+
+################################################################################
+# Process Arguments
+################################################################################
+
+PUB_TARGET="$1"
+PUB_SOURCE="$2"
+PUB_URL="$3"
+
+# If no publication URL is given, use the extension-removed form of the
+# publication source basename
+if [ -z "$PUB_URL" ]; then
+	PUB_URL="$(basename "$PUB_SOURCE" | sed -nre "s/^((.*)[.][^.]*|([^.]*))$/\2\3/p")"
+fi
+
+# Remove spaces
+PUB_URL="$(echo "$PUB_URL" | tr " " "+")"
+
+################################################################################
+# Compile the publication
+################################################################################
+
+# Get compiler python file name
+COMPILER="$(dirname "$0")/compile.py"
+
+# Compile the article in the tempoary dir
+python "$COMPILER" "$PUB_SOURCE" "$TMP_DIR/$PUB_URL" || exit $?
+
+# If a preview, copy it to the user's working directory and we're done
+if [ "$PUB_TARGET" == "-" ]; then
+	cp -r "$TMP_DIR/${PUB_URL}"* "./"
+	echo "Generated local preview successfuly to"
+	echo "$(realpath "./$PUB_URL.html")"
+	echo -n "$(realpath "./$PUB_URL.html")" | xclip
+	exit 0
+fi
+
+
+################################################################################
+# Upload the publication
+################################################################################
+
+# Get metadata merger python file name
+META_MERGER="$(dirname "$0")/merge_meta.py"
+
+# Download the ToC for this publication list
+scp "$WEB_DIR/$PUB_TARGET/toc.json" "$TMP_DIR/toc.json" \
+	|| exit -1
+
+# Add this article's metadata to the toc
+python "$META_MERGER" "$TMP_DIR/toc.json" "$TMP_DIR/$PUB_URL.meta"
+
+# Upload to the server...
+scp -r "$TMP_DIR/toc.json" \
+       "$TMP_DIR/$PUB_URL"{/,.html,.toc} \
+       "$WEB_DIR/$PUB_TARGET/" \
+	|| exit $?
+
+echo "Uploaded successfully to:"
+echo "$WEB_URL/$PUB_TARGET/$PUB_URL"
+echo -n "$WEB_URL/$PUB_TARGET/$PUB_URL" | xclip

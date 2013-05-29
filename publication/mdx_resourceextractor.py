@@ -13,6 +13,8 @@ from markdown.extensions     import Extension
 
 import os
 
+from util import unique
+
 class ResourceExtractorTreeprocessor(Treeprocessor):
 	
 	# A list of types of tags which point to resources and the attribute which
@@ -37,13 +39,7 @@ class ResourceExtractorTreeprocessor(Treeprocessor):
 				file_path = child.attrib[attrib]
 				if file_path.startswith("file://"):
 					local_file_path = file_path[len("file://"):]
-					base_name = os.path.basename(local_file_path)
-					
-					desired_file_name = base_name
-					cnt = 1
-					while desired_file_name in desired_file_names:
-						desired_file_name = "%d_%s"%(cnt, base_name)
-						cnt += 1
+					desired_file_name = unique(os.path.basename(local_file_path), desired_file_names)
 					
 					child.attrib[attrib] = "%s/%s"%(self.configs["resource_dir"],desired_file_name)
 					

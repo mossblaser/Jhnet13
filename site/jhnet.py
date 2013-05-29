@@ -125,5 +125,5 @@ internal_error_handler = error.InternalError( internal_error_template
 if __name__ == "__main__":
 	app = web.application(urls, globals())
 	app.notfound = notfound_handler
-	app.internalerror = internal_error_handler
+	#app.internalerror = internal_error_handler
 	app.run()

@@ -228,7 +228,11 @@ def Publications(url_base_, pub_base_, title_,
 			file_path = os.path.join(self.pub_base, publication_name, path)
 			try:
 				web.header("Content-Type", mimetypes.guess_type(file_path)[0])
-				return open(file_path, "rb").read()
+				with open(file_path, "rb") as f:
+					data = True
+					while data:
+						data = f.read(100)
+						yield data
 			except IOError:
 				raise web.notfound()
 	
