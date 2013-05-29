@@ -36,7 +36,7 @@ import os
 
 from util import unique
 
-def process_markdown(input_markdown, output_name):
+def process_markdown(input_markdown, output_name, latex_img_dir = "./"):
 	"""
 	Produces the html file, toc file, meta file and a list of (local_file,
 	target_name) pairs where local_file is a file on the local system and
@@ -48,10 +48,13 @@ def process_markdown(input_markdown, output_name):
 	                                   , 'resourceextractor'
 	                                   , 'abstractextractor'
 	                                   , 'tocextractor'
+	                                   , 'latex'
 	                                   ]
 	                      , extension_configs = {
 	                          "resourceextractor":
 	                            (("resource_dir",output_name),),
+	                          "latex":
+	                            (("latex_img_dir",latex_img_dir),),
 	                        }
 	                      )
 	
@@ -142,7 +145,10 @@ if __name__=="__main__":
 	
 	output_file_name = os.path.join(output_path, output_name)
 	
-	html, toc, meta, files = process_markdown(input_markdown_file.read(), output_name)
+	html, toc, meta, files = process_markdown( input_markdown_file.read()
+	                                         , output_name
+	                                         , output_path
+	                                         )
 	
 	# Make output file directory
 	try:
