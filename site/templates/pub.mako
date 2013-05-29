@@ -1,5 +1,9 @@
 <%inherit file="normal.mako"/>
 
+<%block name="includes">
+	<link href="${root_path}css/pygments.css" rel="stylesheet">
+</%block>
+
 <div class="row">
 	## Table of contents
 	% if toc is not None:

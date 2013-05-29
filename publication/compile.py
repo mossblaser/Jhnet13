@@ -43,6 +43,7 @@ def process_markdown(input_markdown, output_name):
 	target_name is the name of the file when placed in [output_name]/*
 	"""
 	md = markdown.Markdown( extensions=[ 'meta'
+	                                   , 'codehilite'
 	                                   , 'resourceextractor'
 	                                   , 'abstractextractor'
 	                                   , 'tocextractor'
