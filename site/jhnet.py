@@ -99,7 +99,7 @@ articles = publication.Publications( "/articles"
 
 # The misc directory (with directory browser)
 misc = static.StaticBrowseableDir( "/misc"
-                                 , "./misc"
+                                 , "/home/jonathan"
                                  , misc_template
                                  , root_path = "/"
                                  , site_menu = site_menu
