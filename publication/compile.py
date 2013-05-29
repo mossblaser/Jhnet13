@@ -44,6 +44,7 @@ def process_markdown(input_markdown, output_name):
 	"""
 	md = markdown.Markdown( extensions=[ 'meta'
 	                                   , 'codehilite'
+	                                   , 'footnotes'
 	                                   , 'resourceextractor'
 	                                   , 'abstractextractor'
 	                                   , 'tocextractor'
