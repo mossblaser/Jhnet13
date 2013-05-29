@@ -1,6 +1,7 @@
 <%inherit file="normal.mako"/>
 
 <h1>${heading}</h1>
+<!-- This is not a blog... -->
 
 ${readme}
 
