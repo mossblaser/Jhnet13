@@ -1,0 +1,338 @@
+#!/bin/bash
+
+# Front end for manipulating stuff on Jhnet
+#
+# Usage:
+#   jhnet command [args...]
+#
+# Available commands:
+#
+#   misc -- Add/remove/move files in /misc. Usage:
+#     jhnet misc filename.ext [new-name]
+#       Upload filename.ext to /misc as the basename or new-name.ext.
+#     jhnet misc --rm filename.ext
+#       Remove the named file from misc
+#
+#   pub -- Add/remove publications. Usage:
+#     jhnet pub [location] pubname.md [newname]
+#       Compile pubname.md and upload to the publication directory "location".
+#       If the location "-" is given, the file is compiled locally. If newname is
+#       given it is used as the publication URL, otherwise the basename of the
+#       pubname.md file is used.
+#     jhnet pub --rm [location] pubname
+#       Removes the publication with the url pubname from the specified
+#       location. If the location is "-", attempts to clean-up the locally
+#       compiled preview.
+
+################################################################################
+# Configuration options
+################################################################################
+
+# SSH server and password for the server hosting Jhnet
+JHNET_SERVER="jhnet.co.uk"
+JHNET_USER="mossblaser"
+
+# Directory (optionally relative to the JHNET_USER's home) containing /misc.
+JHNET_MISC_DIR="jhnet.co.uk/misc"
+
+# Public URL of the /misc directory
+JHNET_MISC_URL="http://www.jhnet.co.uk/misc"
+
+# Directory (optionally relative to the JHNET_USER's home) containing
+# publication directories.
+JHNET_PUB_DIR="jhnet.co.uk"
+
+# Public URL of the directory containing publications
+JHNET_PUB_URL="http://www.jhnet.co.uk"
+
+
+########################################
+# Tempoary local versions
+########################################
+
+# SSH server and password for the server hosting Jhnet
+JHNET_SERVER="jonathan-laptop"
+JHNET_USER="jonathan"
+
+# Directory (optionally relative to the JHNET_USER's home) containing /misc.
+JHNET_MISC_DIR="Programing/Web/Jhnet13/site/misc"
+
+# Public URL of the /misc directory
+JHNET_MISC_URL="http://localhost:8080/misc"
+
+# Directory (optionally relative to the JHNET_USER's home) containing
+# publication directories.
+JHNET_PUB_DIR="Programing/Web/Jhnet13/site"
+
+# Public URL of the directory containing publications
+JHNET_PUB_URL="http://localhost:8080"
+
+
+
+################################################################################
+# Global constants
+################################################################################
+
+# Directory in which the "jhnet" utility lives (along with other utility
+# scripts)
+UTIL_DIR="$(dirname "$0")"
+
+
+################################################################################
+# Utility functions
+################################################################################
+
+function download() {
+	# Download a file
+	FILE="$1";shift
+	TARGET="$1";shift
+	
+	scp "$@" "$JHNET_USER@$JHNET_SERVER:$FILE" "$TARGET"
+}
+
+function upload() {
+	# Upload files
+	TARGET="${@:$#}"
+	
+	scp "${@:1:$(($#-1))}" "$JHNET_USER@$JHNET_SERVER:\"$TARGET\""
+}
+
+function remote() {
+	# Remotely execute the specified command
+	ssh "$JHNET_USER@$JHNET_SERVER" "$@"
+}
+
+function url_exists() {
+	# Test if a URL is accessible
+	URL="$1"
+	wget -q --spider "$URL"
+}
+
+function stripext() {
+	# Remove the extension from a filename
+	FILE="$1"
+	echo "${FILE%%.*}"
+}
+
+function getext() {
+	# Remove the extension from a filename
+	FILE="$1"
+	echo "$FILE" | sed -nre "s/[^.]*([.].*)?/\1/p"
+}
+
+
+
+################################################################################
+# Misc
+################################################################################
+
+function misc_rm() {
+	# Remove a file from misc
+	FILE="$1"
+	remote rm -rf "$JHNET_MISC_DIR/$FILE"
+}
+
+function misc_up() {
+	# Upload a file to misc
+	FILE="$1"
+	NAME="$2"
+	FORCE="$3"
+	
+	if [ -n "$NAME" ]; then
+		# A new name has been given. If it doesn't contain an extension, extend it
+		# automatically to include the extension of the input name
+		if echo "$NAME" | grep -vq "\."; then
+			NAME="$NAME$(getext "$FILE")"
+		fi
+	else
+		# Default to the input basename
+		NAME="$(basename "$FILE")"
+	fi
+	
+	# If not being forced, check to see if the file exists
+	if [ "$FORCE" != "!" ] && url_exists "$JHNET_MISC_URL/$NAME"; then
+		echo "ERROR: $NAME already exists on the server."
+		read -p "Enter a new name (or ! to force): " NEW_NAME
+		if [ "$NEW_NAME" == "!" ]; then
+			# Force the upload with the given name
+			misc_up "$FILE" "$NAME" "!"
+			return $?
+		elif [ -n "$NEW_NAME" ]; then
+			# Try again with a new name
+			misc_up "$FILE" "$NEW_NAME"
+			return $?
+		else
+			return 1
+		fi
+	fi
+	
+	# Upload the file
+	upload "$FILE" "$JHNET_MISC_DIR/$NAME" && (
+		# On upload success
+		echo
+		echo "Uploaded successfully to:"
+		echo "$JHNET_MISC_URL/$NAME"
+		echo -n "$JHNET_MISC_URL/$NAME" | xclip
+	)
+}
+
+function misc() {
+	case "$1" in
+		"--rm") shift; misc_rm "$@"; return $?;;
+		"") echo "Usage $0 misc (filename [newname])|(--rm filename)"; return 1;;
+		*)             misc_up "$@"; return $?;;
+	esac
+}
+
+
+################################################################################
+# Pub
+################################################################################
+
+function pub_usage() {
+	echo "Usage $0 pub (pub-location input-name.md [url])|(--rm pub-location url)"
+}
+
+function pub_rm() {
+	# Not enough args
+	if [ -z "$2" ]; then
+		pub_usage
+		return 1
+	fi
+	
+	PUB_LOCATION="$1"
+	PUB_URL="$2"
+	
+	# If the publication name given looks like a filename, munge it
+	if echo "$PUB_URL" | grep -qE "\.|/| "; then
+		PUB_URL="$(pub_filename_to_url "$PUB_URL")"
+	fi
+	
+	if [ "$PUB_LOCATION" == "-" ]; then
+		# Delete local files
+		rm -rf "./$PUB_URL/" "./$PUB_URL."{html,toc,meta} 
+		return 0
+	else
+		# Delete remote files
+		
+		# Tempoary working directory
+		TMP_DIR="$(mktemp -d "/tmp/$(basename "$0")_pub_XXXXX")"
+		trap "rm -rf \"$TMP_DIR\"" EXIT
+		
+		# Get the ToC from the server
+		if ! download "$JHNET_PUB_DIR/$PUB_LOCATION/toc.json" "$TMP_DIR/toc.json" -q; then
+			echo "Couldn't download the ToC for '$PUB_LOCATION'."
+			echo "Is this definately a publicatoin location?"
+			return 1
+		fi
+		
+		# Remove the entry for this URL
+		python "$UTIL_DIR/rm_meta.py" "$TMP_DIR/toc.json" "$PUB_URL"
+		
+		# Upload the updated ToC
+		upload -q "$TMP_DIR/toc.json" \
+		          "$JHNET_PUB_DIR/$PUB_LOCATION/"
+		
+		# Delete the files from the server
+		remote rm -rf "$JHNET_PUB_DIR/$PUB_LOCATION/$PUB_URL/" \
+		              "$JHNET_PUB_DIR/$PUB_LOCATION/$PUB_URL."{html,toc,meta} 
+	fi
+	
+	echo "Publication '$PUB_URL' removed."
+	return 0
+}
+
+pub_filename_to_url() {
+	# Strip the path and extension and remove spaces
+	INPUT_FILE="$1"
+	stripext "$(basename "$INPUT_FILE")" \
+		| tr " " "-"
+}
+
+function pub_up() {
+	# Not enough args
+	if [ -z "$2" ]; then
+		pub_usage
+		return 1
+	fi
+	
+	PUB_LOCATION="$1"
+	INPUT_FILE="$2"
+	PUB_URL="$3"
+	
+	# If no publication URL is given, use the extension-removed form of the
+	# input file basename
+	if [ -z "$PUB_URL" ]; then
+		PUB_URL="$(pub_filename_to_url "$INPUT_FILE")"
+	fi
+	
+	# Tempoary working directory
+	TMP_DIR="$(mktemp -d "/tmp/$(basename "$0")_pub_XXXXX")"
+	trap "rm -rf \"$TMP_DIR\"" EXIT
+	
+	# Attempt compilation
+	python "$UTIL_DIR/compile.py" "$INPUT_FILE" "$TMP_DIR/$PUB_URL" || return $?
+	
+	# Place in target location
+	if [ "$PUB_LOCATION" == "-" ]; then
+		# Just a preview, place in working directory
+		cp -r "$TMP_DIR/$PUB_URL/" "$TMP_DIR/$PUB_URL."{html,toc,meta} ./
+		OUT_URL="$(realpath "./$PUB_URL.html")"
+	else
+		# Upload to server
+		
+		# Get the ToC from the server
+		if ! download "$JHNET_PUB_DIR/$PUB_LOCATION/toc.json" "$TMP_DIR/toc.json" -q; then
+			echo "Couldn't download the ToC for '$PUB_LOCATION'."
+			echo "Is this definately a publicatoin location?"
+			return 1
+		fi
+		
+		# Add the publication to the site ToC
+		python "$UTIL_DIR/merge_meta.py" "$TMP_DIR/toc.json" "$TMP_DIR/$PUB_URL.meta"
+		
+		# Upload everything again
+		upload -r "$TMP_DIR/toc.json" \
+		          "$TMP_DIR/$PUB_URL/" \
+		          "$TMP_DIR/$PUB_URL."{html,toc,meta} \
+		          "$JHNET_PUB_DIR/$PUB_LOCATION/"
+		
+		OUT_URL="$JHNET_PUB_URL/$PUB_LOCATION/$PUB_URL"
+	fi
+	
+	# Report success
+	if [ "$PUB_LOCATION" == "-" ]; then
+		echo "Compiled publication successfuly to"
+	else
+		echo "Compiled and uploaded publication successfuly to"
+	fi
+	echo "$OUT_URL"
+	echo -n "$OUT_URL" | xclip
+	return 0
+}
+
+function pub() {
+	case "$1" in
+		"--rm") shift; pub_rm "$@"; return $?;;
+		"") pub_usage; return 1;;
+		*) pub_up "$@"; return $?;;
+	esac
+}
+
+
+################################################################################
+# Main (World Starts here!)
+################################################################################
+
+function main() {
+	CMD="$1";shift
+	
+	case "$CMD" in
+		"misc") misc "$@"; exit $? ;;
+		"pub")  pub  "$@"; exit $? ;;
+		"") echo "Usage: $0 command [arguments]"; exit 1 ;;
+		*)  echo "Unknown command '$CMD'.";       exit 1 ;;
+	esac
+}
+
+main "$@"
