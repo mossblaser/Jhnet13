@@ -20,7 +20,7 @@
 ################################################################################
 
 WEB_DIR="jhnet.co.uk:jhnet.co.uk"
-WEB_DIR="../site"
+WEB_DIR="/home/jonathan/Programing/Web/Jhnet13/site"
 WEB_URL="http://www.jhnet.co.uk"
 
 # Tempoary working directory
