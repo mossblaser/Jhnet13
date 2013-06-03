@@ -36,7 +36,7 @@ import os
 
 from util import unique
 
-def process_markdown(input_markdown, output_name, latex_img_dir = "./"):
+def process_markdown(input_markdown, output_name, latex_img_dir = "./", input_path = "./"):
 	"""
 	Produces the html file, toc file, meta file and a list of (local_file,
 	target_name) pairs where local_file is a file on the local system and
@@ -52,7 +52,9 @@ def process_markdown(input_markdown, output_name, latex_img_dir = "./"):
 	                                   ]
 	                      , extension_configs = {
 	                          "resourceextractor":
-	                            (("resource_dir",output_name),),
+	                            ( ("resource_dir",output_name)
+	                            , ("relative_path",input_path)
+	                            ),
 	                          "latex":
 	                            (("latex_img_dir",latex_img_dir),),
 	                        }
@@ -92,7 +94,7 @@ def process_markdown(input_markdown, output_name, latex_img_dir = "./"):
 	
 	# Add the article image to the list of files
 	if img is not None and img.startswith("file://"):
-		img = img[len("file://"):]
+		img = os.path.join(input_path, img[len("file://"):])
 		img_output_name = "%s/%s"%(output_name,
 		                           unique(os.path.basename(img),
 		                                  [f.split("/")[-1] for (_,f) in files]))
@@ -148,6 +150,7 @@ if __name__=="__main__":
 	html, toc, meta, files = process_markdown( input_markdown_file.read()
 	                                         , output_name
 	                                         , output_path
+	                                         , os.path.dirname(input_markdown_file_name)
 	                                         )
 	
 	# Make output file directory
