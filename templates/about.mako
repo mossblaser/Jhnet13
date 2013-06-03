@@ -35,10 +35,10 @@
 		<h2>On The Web</h2>
 		<dl>
 			<dt>GitHub</dt>
-			<dd>User: <a href="#">mossblaser</a></dd>
+			<dd>User: <a href="http://github.com/mossblaser">mossblaser</a></dd>
 			
 			<dt>University</dt>
-			<dd><a href="#"><abbr title="Advanced Processor Technologies">APT</abbr> Group</a></dd>
+			<dd><a href="http://apt.cs.man.ac.uk/people/jheathcote/"><abbr title="Advanced Processor Technologies">APT</abbr> Group</a></dd>
 		</dl>
 	</div>
 	
