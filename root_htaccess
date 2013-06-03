@@ -1,0 +1,47 @@
+# An .htaccess file which sets up the web server to serve Jhnet.py
+
+# Python files are fcgi scripts
+AddHandler fcgid-script .py
+
+# Allow CGI scripts with mod_cgi
+Options +ExecCGI
+
+# Use allow then deny statements for access control
+Order allow,deny
+Allow from all
+
+# Disable dir listing related features
+Options -Indexes
+DirectorySlash Off
+
+<IfModule mod_rewrite.c>
+	RewriteEngine on
+	RewriteBase /
+	
+	# Rewrite accesses to the static resource directories to the actual static
+	# content directory.
+	RewriteRule ^((img|css|js)/.*)$ static/$1 [PT]
+	
+	# A common pattern which can be seen here is the [OR] and a file existence
+	# check. This handles the case that a static file which doesn't exist is
+	# requested and allows web.py to handle the 404.
+	
+	# Static directories
+	RewriteCond %{REQUEST_URI} !^/static/ [OR]
+	RewriteCond %{REQUEST_FILENAME} !-f
+	
+	# Publication static dirs
+	RewriteCond %{REQUEST_URI} !^/(articles|projects)/[^/]+/.+ [OR]
+	RewriteCond %{REQUEST_FILENAME} !-f
+	
+	# Files in misc
+	RewriteCond %{REQUEST_URI} !^/misc/.*[^/]$ [OR]
+	RewriteCond %{REQUEST_FILENAME} !-f
+	
+	# Don't re-rewrite already re-written addresses
+	RewriteCond %{REQUEST_URI} !^(/.*)+jhnet.py/
+	
+	# Rewrite to go via jhnet.py
+	RewriteRule ^(.*)$ jhnet.py/$1 [PT]
+</IfModule>
+

@@ -11,7 +11,20 @@ from mako.template import Template
 from mako.lookup   import TemplateLookup
 
 def rel_path(path):
+	"""
+	Convert a path relative to this file to an absolute path
+	"""
 	return os.path.join(os.path.dirname(__file__), path)
+
+def site_path(path):
+	"""
+	Convert a path relative to the web directory specified by the JHNET_DIR
+	environment variable to an absolute path. Defaults the the parent directory if
+	not defined.
+	"""
+	return os.path.join(os.environ.get( "JHNET_DIR"
+	                                  , os.path.join(os.path.dirname(__file__),".."))
+	                   , path)
 
 ################################################################################
 # URL Decoding
@@ -38,7 +51,7 @@ urls = [
 # Load templates
 ################################################################################
 
-template_lookup = TemplateLookup(directories = [rel_path("templates")])
+template_lookup = TemplateLookup(directories = [site_path("templates")])
 
 index_template          = template_lookup.get_template("index.mako")
 about_template          = template_lookup.get_template("about.mako")
@@ -82,7 +95,7 @@ about = static.StaticTemplate( about_template
 
 # Project pages, based on the publications system
 projects = publication.Publications( "/projects"
-                                   , rel_path("projects")
+                                   , site_path("projects")
                                    , "Projects"
                                    , pub_listing_template
                                    , pub_template
@@ -93,7 +106,7 @@ projects = publication.Publications( "/projects"
 
 # Articles, based on the publications system
 articles = publication.Publications( "/articles"
-                                   , rel_path("articles")
+                                   , site_path("articles")
                                    , "Articles"
                                    , pub_listing_template
                                    , pub_template
@@ -104,7 +117,7 @@ articles = publication.Publications( "/articles"
 
 # The misc directory (with directory browser)
 misc = static.StaticBrowseableDir( "/misc"
-                                 , rel_path("misc")
+                                 , site_path("misc")
                                  , misc_template
                                  , root_path = "/"
                                  , site_menu = site_menu
@@ -112,7 +125,7 @@ misc = static.StaticBrowseableDir( "/misc"
                                  )
 
 # Static bits just taken from the static directory
-static_resources = static.StaticDir("/", rel_path("static"))
+static_resources = static.StaticDir("/", site_path("static"))
 
 notfound_handler = error.NotFound( notfound_template
                                  , root_path = "/"

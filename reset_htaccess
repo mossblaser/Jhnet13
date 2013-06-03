@@ -1,0 +1,11 @@
+# Place this .htaccess file in directories which should behave like a normal
+# Apache directory without going through the Jhnet rewrite and listing rules.
+
+# Use allow then deny statements for access control
+Order allow,deny
+Allow from all
+
+# Disable dir listing related features
+Options +Indexes
+DirectorySlash On
+RewriteEngine off
