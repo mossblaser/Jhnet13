@@ -167,9 +167,10 @@ def Publications(url_base_, pub_base_, title_,
 			for tag_, url_ in zip(tags, tag_urls):
 				tag_menu.append((tag_, tag_link(tag_),url_ == tag_url))
 			
-			# Generate list of publications
+			# Generate list of publications (list in reverse order of the file so that
+			# recently added items appear first)
 			publications = []
-			for pub in toc:
+			for pub in toc[::-1]:
 				if pub["show"] and (tag is None or tag in pub["tags"]):
 					publications.append((
 						pub["title"],
