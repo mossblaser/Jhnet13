@@ -83,6 +83,7 @@ class _StaticBase(object):
 			cur_path += sub_path
 			breadcrumb.append((cur_path, sub_path))
 		
+		web.header('Content-Type', 'text/html')
 		return self.listing_template.render(
 			title          = "Index of %s%s"%(self.url_base, path),
 			readme         = readme,
@@ -164,6 +165,7 @@ def StaticTemplate(template, **kwargs):
 	"""
 	class _StaticTemplate(object):
 		def GET(self):
+			web.header('Content-Type', 'text/html')
 			return template.render(**kwargs)
 	
 	return _StaticTemplate

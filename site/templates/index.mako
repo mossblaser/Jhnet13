@@ -17,6 +17,12 @@ Jhnet
 			border-top-style : solid;
 		}
 		
+		@media (max-width: 767px) {
+			div.homepage div.masthead{
+				margin-top : 20px;
+			}
+		}
+		
 		div.homepage .lead {
 			padding-top    : 10px;
 			padding-bottom : 10px;
@@ -24,6 +30,9 @@ Jhnet
 		
 		ul.home-buttons {
 			list-style : none;
+			margin-left : 0px;
+			margin-top : 0px;
+			margin-right : 0px;
 			margin-bottom : -20px;
 		}
 		

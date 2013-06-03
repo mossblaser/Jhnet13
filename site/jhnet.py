@@ -1,3 +1,5 @@
+import os
+
 import web
 
 import deslash
@@ -7,6 +9,9 @@ import error
 
 from mako.template import Template
 from mako.lookup   import TemplateLookup
+
+def rel_path(path):
+	return os.path.join(os.path.dirname(__file__), path)
 
 ################################################################################
 # URL Decoding
@@ -33,7 +38,7 @@ urls = [
 # Load templates
 ################################################################################
 
-template_lookup = TemplateLookup(directories = ["./templates"])
+template_lookup = TemplateLookup(directories = [rel_path("templates")])
 
 index_template          = template_lookup.get_template("index.mako")
 about_template          = template_lookup.get_template("about.mako")
@@ -77,7 +82,7 @@ about = static.StaticTemplate( about_template
 
 # Project pages, based on the publications system
 projects = publication.Publications( "/projects"
-                                   , "./projects"
+                                   , rel_path("projects")
                                    , "Projects"
                                    , pub_listing_template
                                    , pub_template
@@ -88,7 +93,7 @@ projects = publication.Publications( "/projects"
 
 # Articles, based on the publications system
 articles = publication.Publications( "/articles"
-                                   , "./articles"
+                                   , rel_path("articles")
                                    , "Articles"
                                    , pub_listing_template
                                    , pub_template
@@ -99,7 +104,7 @@ articles = publication.Publications( "/articles"
 
 # The misc directory (with directory browser)
 misc = static.StaticBrowseableDir( "/misc"
-                                 , "./misc"
+                                 , rel_path("misc")
                                  , misc_template
                                  , root_path = "/"
                                  , site_menu = site_menu
@@ -107,7 +112,7 @@ misc = static.StaticBrowseableDir( "/misc"
                                  )
 
 # Static bits just taken from the static directory
-static_resources = static.StaticDir("/", "./static")
+static_resources = static.StaticDir("/", rel_path("static"))
 
 notfound_handler = error.NotFound( notfound_template
                                  , root_path = "/"
@@ -121,9 +126,13 @@ internal_error_handler = error.InternalError( internal_error_template
                                             , site_menu_active_name = None
                                             )
 
+# Set up the application
+app = web.application(urls, globals())
+app.notfound = notfound_handler
 
 if __name__ == "__main__":
-	app = web.application(urls, globals())
-	app.notfound = notfound_handler
-	#app.internalerror = internal_error_handler
+	# If running standalone, boot up the testing server
 	app.run()
+else:
+	# If running via FCGI then this is probably production, show sanitised errors
+	app.internalerror = internal_error_handler

@@ -184,6 +184,7 @@ def Publications(url_base_, pub_base_, title_,
 					print "hidden", pub["show"], tag is None, tag in pub["tags"]
 			
 			# Render the page
+			web.header('Content-Type', 'text/html')
 			return self.listing_template.render(
 				title        = title,
 				heading      = self.title,
@@ -216,6 +217,7 @@ def Publications(url_base_, pub_base_, title_,
 				pub_toc = None
 			
 			# Render the page
+			web.header('Content-Type', 'text/html')
 			return self.pub_template.render(
 				title   = "%s - %s"%(pub["title"], self.title),
 				content = pub_html,
