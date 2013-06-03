@@ -7,6 +7,7 @@ web.py handlers for various types of static content.
 import web
 
 import os
+import stat
 import mimetypes
 import datetime
 
@@ -21,10 +22,11 @@ class _StaticBase(object):
 		for fmt, div in ( ("%.2fGB", 1024*1024*1024)
 		                , ("%.1fMB", 1024*1024)
 		                , ("%dKB", 1024)
-		                , ("%dB", 1)
 		                ):
 			if size / div:
 				return fmt%(float(size) / div)
+		# Fall back on bytes
+		return "%dB"%size
 	
 	
 	def GET(self, path):
@@ -52,9 +54,16 @@ class _StaticBase(object):
 			(mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime) = os.stat(file_path)
 			
 			mtime_f = datetime.datetime.fromtimestamp(mtime).strftime("%d-%b-%Y %H:%M")
-			size_f  = self.format_size(size)
+			if stat.S_ISDIR(mode):
+				size_f = "Directory"
+				file_name += "/"
+			else:
+				size = size or 0
+				size_f  = self.format_size(size)
 			
-			file_list.append((file_name, mtime_f, size_f, mtime, size))
+			# Filter out the README
+			if file_name != "README.html":
+				file_list.append((file_name, mtime_f, size_f, mtime, size))
 		
 		params = web.input()
 		sort_keys = {
