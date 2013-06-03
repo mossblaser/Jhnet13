@@ -1,4 +1,4 @@
-# An .htaccess file which sets up the web server to serve Jhnet.py
+# An .htaccess file which sets up the web server to serve index.py
 
 # Python files are fcgi scripts
 AddHandler fcgid-script .py
@@ -39,9 +39,9 @@ DirectorySlash Off
 	RewriteCond %{REQUEST_FILENAME} !-f
 	
 	# Don't re-rewrite already re-written addresses
-	RewriteCond %{REQUEST_URI} !^(/.*)+jhnet.py/
+	RewriteCond %{REQUEST_URI} !^(/.*)+index.py/
 	
-	# Rewrite to go via jhnet.py
-	RewriteRule ^(.*)$ jhnet.py/$1 [PT]
+	# Rewrite to go via index.py
+	RewriteRule ^(.*)$ index.py/$1 [PT]
 </IfModule>
 

@@ -6,7 +6,7 @@
 REPO_DIR="$(readlink -f "$(dirname "$0")")"
 
 # Link in jhnet main script and htaccess
-cp "$REPO_DIR/jhnet.py" jhnet.py
+cp "$REPO_DIR/index.py" index.py
 cp "$REPO_DIR/root_htaccess" .htaccess
 
 # Link in site content directories
