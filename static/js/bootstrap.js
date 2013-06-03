@@ -2739,7 +2739,8 @@
       })
 
       $(this).addClass('rowlink')
-      link.replaceWith(link.html())
+      // JH: Removed this so that the row's hyperlink doesn't disapear!
+      //link.replaceWith(link.html())
     })
   }
 

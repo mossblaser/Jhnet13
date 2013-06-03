@@ -19,6 +19,6 @@
 		${next.body()}
 		
 		<script src="http://code.jquery.com/jquery.js"></script>
-		<script src="${root_path}js/bootstrap.min.js"></script>
+		<script src="${root_path}js/bootstrap.js"></script>
 	</body>
 </html>
