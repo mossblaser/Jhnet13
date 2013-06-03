@@ -3,7 +3,7 @@
 # A quick hack of a script which sets up the current working directory as a
 # Jhnet site root.
 
-REPO_DIR="$(realpath "$(dirname "$0")")"
+REPO_DIR="$(readlink -f "$(dirname "$0")")"
 
 # Link in jhnet main script and htaccess
 ln -s "$REPO_DIR/jhnet.py" jhnet.py
@@ -30,7 +30,7 @@ virtualenv --distribute .
 
 # Add environment variables (massive hack)
 echo 'sys.path.append("'"$REPO_DIR"'")'                >> lib/python*/site.py
-echo 'os.environ["JHNET_DIR"]="'$(realpath "`pwd`")'"' >> lib/python*/site.py
+echo 'os.environ["JHNET_DIR"]="'$(readlink -f "`pwd`")'"' >> lib/python*/site.py
 
 # Activate the virtualenv
 source bin/activate
