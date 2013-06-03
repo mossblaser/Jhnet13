@@ -44,6 +44,7 @@ def process_markdown(input_markdown, output_name, latex_img_dir = "./", input_pa
 	"""
 	md = markdown.Markdown( extensions=[ 'meta'
 	                                   , 'codehilite'
+	                                   , 'def_list'
 	                                   , 'footnotes'
 	                                   , 'resourceextractor'
 	                                   , 'abstractextractor'
