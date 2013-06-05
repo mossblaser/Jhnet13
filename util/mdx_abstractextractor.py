@@ -14,13 +14,17 @@ class AbstractExtractorTreeprocessor(Treeprocessor):
 	
 	
 	def get_text(self, root):
-		return root.text + "".join(self.get_text(c) for c in root) + root.tail
+		return (root.text or "")\
+		       + "".join(self.get_text(c) for c in root) \
+		       + (root.tail or "")
 	
 	
 	def get_abstract(self, root):
 		for child in root:
 			if child.tag == "p":
-				return self.get_text(child)
+				text = self.get_text(child)
+				if text.strip() != "":
+					return text
 			
 			ch_abs = self.get_abstract(child)
 			if ch_abs is not None:
