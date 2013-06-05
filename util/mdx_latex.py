@@ -14,6 +14,9 @@ specified. The \begin and \end lines must be at indent level zero. Note:
 alt-text should be unique within a document as filenames for PNGs are derrived
 from the alt-text.
 
+If the alt-text given is "<preamble>", the code is not rendered but added to the
+preamble of all succeeding latex blocks.
+
 The PNG file will be placed in the directory configs["latex_img_dir"].
 """
 
@@ -58,8 +61,10 @@ class LaTeXBlockProcessor(BlockProcessor):
 		\usepackage{tikz}
 		\usetikzlibrary{positioning}
 		
+		${preamble}
+		
 		\begin{document}
-				${document}
+			${document}
 		\end{document}
 	""")
 	
@@ -67,6 +72,9 @@ class LaTeXBlockProcessor(BlockProcessor):
 	def __init__(self, configs, *args, **kwargs):
 		self.configs = dict(configs)
 		BlockProcessor.__init__(self, *args, **kwargs)
+		
+		# LaTeX preamble
+		self.preamble = ""
 	
 	
 	def render_latex(self, latex_snippet, output_png_file):
@@ -79,14 +87,22 @@ class LaTeXBlockProcessor(BlockProcessor):
 		
 		try:
 			# Generate the tex file
-			tex = LaTeXBlockProcessor.LATEX_TEMPLATE.render(document = latex_snippet)
+			tex = LaTeXBlockProcessor.LATEX_TEMPLATE.render(
+				preamble = self.preamble,
+				document = latex_snippet,
+			)
 			with open(tex_file, "w") as f:
 				f.write(tex)
 			
 			# Try and build the file
 			for build_num in range(LaTeXBlockProcessor.LATEX_BUILDS):
-				p = Popen( ["pdflatex", "-shell-escape", "-halt-on-error", tex_file]
-				         , cwd = tmp_dir
+				p = Popen( [ "pdflatex"
+				           , "-shell-escape"
+				           , "-halt-on-error"
+				           , "-output-directory"
+				           , tmp_dir
+				           , tex_file]
+				         , cwd    = os.path.realpath(self.configs.get("input_path", "./"))
 				         , stdin  = None
 				         , stdout = sys.stderr
 				         , stderr = sys.stderr
@@ -135,12 +151,20 @@ class LaTeXBlockProcessor(BlockProcessor):
 		
 		alt = latex_match.group(1)
 		src = latex_match.group(2)
-		img = os.path.join(self.configs["latex_img_dir"], "%s.png"%(slugify(alt, "_")))
 		
-		self.render_latex(src, img)
-		
-		# Add the image of the latex supplied
-		blocks.insert(0, "![%s](file://%s)"%(alt,img))
+		# Check to see if this is a block defining the preamble for latex blocks in
+		# this document.
+		if alt == "<preamble>":
+			# Preamble section
+			self.preamble += src
+		else:
+			# Normal LaTeX source
+			img = os.path.join(self.configs["latex_img_dir"], "%s.png"%(slugify(alt, "_")))
+			
+			self.render_latex(src, img)
+			
+			# Add the image of the latex supplied
+			blocks.insert(0, "![%s](file://%s)"%(alt,img))
 
 
 class LaTeX(Extension):

@@ -57,7 +57,9 @@ def process_markdown(input_markdown, output_name, latex_img_dir = "./", input_pa
 	                            , ("relative_path",input_path)
 	                            ),
 	                          "latex":
-	                            (("latex_img_dir",latex_img_dir),),
+	                            ( ("latex_img_dir",latex_img_dir)
+	                            , ("input_path", input_path)
+	                            ),
 	                        }
 	                      )
 	
