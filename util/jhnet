@@ -36,36 +36,36 @@ JHNET_USER="mossblaser"
 JHNET_MISC_DIR="jhnet.co.uk/misc"
 
 # Public URL of the /misc directory
-JHNET_MISC_URL="http://www.jhnet.co.uk/misc"
+JHNET_MISC_URL="http://jhnet.co.uk/misc"
 
 # Directory (optionally relative to the JHNET_USER's home) containing
 # publication directories.
 JHNET_PUB_DIR="jhnet.co.uk"
 
 # Public URL of the directory containing publications
-JHNET_PUB_URL="http://www.jhnet.co.uk"
+JHNET_PUB_URL="http://jhnet.co.uk"
 
 
-########################################
-# Tempoary local versions
-########################################
-
-# SSH server and password for the server hosting Jhnet
-JHNET_SERVER="jonathan-laptop"
-JHNET_USER="jonathan"
-
-# Directory (optionally relative to the JHNET_USER's home) containing /misc.
-JHNET_MISC_DIR="Programing/Web/Jhnet13/site/misc"
-
-# Public URL of the /misc directory
-JHNET_MISC_URL="http://localhost:8080/misc"
-
-# Directory (optionally relative to the JHNET_USER's home) containing
-# publication directories.
-JHNET_PUB_DIR="Programing/Web/Jhnet13/site"
-
-# Public URL of the directory containing publications
-JHNET_PUB_URL="http://localhost:8080"
+#########################################
+## Tempoary local versions
+#########################################
+#
+## SSH server and password for the server hosting Jhnet
+#JHNET_SERVER="jonathan-laptop"
+#JHNET_USER="jonathan"
+#
+## Directory (optionally relative to the JHNET_USER's home) containing /misc.
+#JHNET_MISC_DIR="Programing/Web/Jhnet13/site/misc"
+#
+## Public URL of the /misc directory
+#JHNET_MISC_URL="http://localhost:8080/misc"
+#
+## Directory (optionally relative to the JHNET_USER's home) containing
+## publication directories.
+#JHNET_PUB_DIR="Programing/Web/Jhnet13/site"
+#
+## Public URL of the directory containing publications
+#JHNET_PUB_URL="http://localhost:8080"
 
 
 
