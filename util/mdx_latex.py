@@ -29,6 +29,10 @@ from mako.template import Template
 
 from subprocess import Popen
 
+from PIL import Image, PngImagePlugin
+
+import hashlib
+
 import re
 import os, sys, tempfile, shutil
 
@@ -77,9 +81,46 @@ class LaTeXBlockProcessor(BlockProcessor):
 		self.preamble = ""
 	
 	
+	def set_png_metadata(self, png_filename, metadata):
+		"""
+		Takes a PNG filename and overwrites the fields specified in metadata with
+		the values given, adding any new fields.
+		"""
+		im = Image.open(png_filename)
+		
+		# This hack works-around PIL's broken png metadata support. Disovered here:
+		# http://blog.client9.com/2007/08/python-pil-and-png-metadata-take-2.html
+		meta = PngImagePlugin.PngInfo()
+		
+		# These meta-data entries are added (eroneously) by PIL, ignore them
+		reserved = ('interlace', 'gamma', 'dpi', 'transparency', 'aspect')
+		
+		# Add in the new metadata
+		img_metadata = im.info.copy()
+		img_metadata.update(metadata)
+		
+		# Add to the PNG
+		for k,v in img_metadata.iteritems():
+			if k not in reserved:
+				meta.add_text(k,v)
+		
+		# Write it out
+		im.save(png_filename, pnginfo=meta)
+	
+	
+	def get_png_metadata(self, png_filename):
+		"""
+		Takes a PNG filename and returns the metadata fields it contains as a dict.
+		"""
+		return Image.open(png_filename).info.copy()
+	
+	
 	def render_latex(self, latex_snippet, output_png_file):
 		"""
-		Takes a snippet of latex and produces a png at the filename specified.
+		Takes a snippet of latex and produces a png at the filename specified. This
+		method is lazy, if the tex has not changed since the last run, it is not
+		compiled. This is detected by checking a hash of the tex added to the PNG
+		metadata.
 		"""
 		tmp_dir = tempfile.mkdtemp(prefix = "mdx_latex_")
 		tex_file = os.path.join(tmp_dir, "file.tex")
@@ -91,6 +132,20 @@ class LaTeXBlockProcessor(BlockProcessor):
 				preamble = self.preamble,
 				document = latex_snippet,
 			)
+			tex_hash = hashlib.sha1(tex).hexdigest()
+			
+			# Check if anything needs to be done
+			try:
+				png_meta = self.get_png_metadata(output_png_file)
+				if tex_hash == png_meta.get("tex_hash", None):
+					# Already got the latest version in the PNG, do nothing!
+					return
+			except IOError:
+				# No file exists yet so we definately should build it
+				pass
+			
+			
+			# Store the tex in a file to be compiled
 			with open(tex_file, "w") as f:
 				f.write(tex)
 			
@@ -99,8 +154,7 @@ class LaTeXBlockProcessor(BlockProcessor):
 				p = Popen( [ "pdflatex"
 				           , "-shell-escape"
 				           , "-halt-on-error"
-				           , "-output-directory"
-				           , tmp_dir
+				           , "-output-directory", tmp_dir
 				           , tex_file]
 				         , cwd    = os.path.realpath(self.configs.get("input_path", "./"))
 				         , stdin  = None
@@ -118,6 +172,9 @@ class LaTeXBlockProcessor(BlockProcessor):
 			         )
 			if p.wait() != 0:
 				raise Exception("Converting PDF to PNG failed for:\n%s"%latex_snippet)
+			
+			# Add the hash of the source to the metadata 
+			self.set_png_metadata(output_png_file, {"tex_hash":tex_hash})
 			
 		finally:
 			shutil.rmtree(tmp_dir)

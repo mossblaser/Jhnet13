@@ -137,6 +137,11 @@ if __name__=="__main__":
 	# The input file implies an output name which may be used
 	input_suggested_output_name, _ = os.path.splitext(input_markdown_file_name)
 	
+	# Compiled TeX images should be placed in the same directory as the source
+	# markdown. This means that they don't have to be re-built every time the file
+	# is compiled.
+	tex_image_path = os.path.dirname(input_markdown_file_name)
+	
 	# Output goes to what name...
 	if len(sys.argv) > 2:
 		output_path = sys.argv[2]
@@ -153,7 +158,7 @@ if __name__=="__main__":
 	
 	html, toc, meta, files = process_markdown( input_markdown_file.read()
 	                                         , output_name
-	                                         , output_path
+	                                         , tex_image_path
 	                                         , os.path.dirname(input_markdown_file_name)
 	                                         )
 	
