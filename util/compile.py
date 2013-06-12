@@ -49,6 +49,7 @@ def process_markdown(input_markdown, output_name, latex_img_dir = "./", input_pa
 	                                   , 'resourceextractor'
 	                                   , 'abstractextractor'
 	                                   , 'tocextractor'
+	                                   , 'mathjax'
 	                                   , 'latex'
 	                                   ]
 	                      , extension_configs = {
