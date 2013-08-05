@@ -28,7 +28,7 @@
 # Configuration options
 ################################################################################
 
-# SSH server and password for the server hosting Jhnet
+# SSH server for the server hosting Jhnet
 JHNET_SERVER="jhnet.co.uk"
 JHNET_USER="mossblaser"
 
@@ -50,7 +50,7 @@ JHNET_PUB_URL="http://jhnet.co.uk"
 ## Tempoary local versions
 #########################################
 #
-## SSH server and password for the server hosting Jhnet
+## SSH server for the server hosting Jhnet
 #JHNET_SERVER="jonathan-laptop"
 #JHNET_USER="jonathan"
 #
