@@ -93,7 +93,8 @@ class _StaticBase(object):
 			breadcrumb.append((cur_path, sub_path))
 		
 		web.header('Content-Type', 'text/html')
-		return self.listing_template.render(
+		web.header('Transfer-Encoding','chunked')
+		page = self.listing_template.render(
 			title          = "Index of %s%s"%(self.url_base, path),
 			readme         = readme,
 			breadcrumb     = breadcrumb,
@@ -109,6 +110,10 @@ class _StaticBase(object):
 			                 if sort_type == "size" else "",
 			**self.kwargs
 		)
+		
+		# Stream this (long) list
+		for line in page.split("\n"):
+			yield line + "\n"
 	
 	
 	def GET_static_file(self, path):
