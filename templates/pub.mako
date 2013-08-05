@@ -15,7 +15,7 @@
 <div class="row">
 	## Table of contents
 	% if toc is not None:
-		<div class="toc span3 pull-right" data-spy="affix" data-offset-top="20">
+		<div class="toc span3 pull-right">
 			<ul class="nav nav-list">
 				<li class="nav-header">Table of Contents</li>
 				<ul class="nav nav-list">
