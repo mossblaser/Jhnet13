@@ -115,7 +115,7 @@ class LaTeXBlockProcessor(BlockProcessor):
 		return Image.open(png_filename).info.copy()
 	
 	
-	def render_latex(self, latex_snippet, output_png_file):
+	def render_latex(self, latex_snippet, output_png_file, output_pdf_file):
 		"""
 		Takes a snippet of latex and produces a png at the filename specified. This
 		method is lazy, if the tex has not changed since the last run, it is not
@@ -163,6 +163,10 @@ class LaTeXBlockProcessor(BlockProcessor):
 				         )
 				if p.wait() != 0:
 					raise Exception("LaTeX Compilation Failed for:\n%s"%latex_snippet)
+			
+			# Make a copy of required
+			if output_pdf_file is not None:
+				shutil.copy(pdf_file, output_pdf_file)
 			
 			# Convert to PNG
 			p = Popen( ["convert", "-density", "110x110", pdf_file, output_png_file]
@@ -212,16 +216,32 @@ class LaTeXBlockProcessor(BlockProcessor):
 		# Check to see if this is a block defining the preamble for latex blocks in
 		# this document.
 		if alt == "<preamble>":
-			# Preamble section
+			# For the preamble section
 			self.preamble += src
 		else:
-			# Normal LaTeX source
+			# A Normal LaTeX file to render
+			
+			# Make the image a link to the PDF?
+			link_pdf = False
+			if "--pdf" in alt:
+				alt = alt.replace("--pdf", "").strip()
+				link_pdf = True
+				
+			
 			img = os.path.join(self.configs["latex_img_dir"], "%s.png"%(slugify(alt, "_")))
 			
-			self.render_latex(src, img)
+			if link_pdf:
+				pdf = os.path.join(self.configs["latex_img_dir"], "%s.pdf"%(slugify(alt, "_")))
+			else:
+				pdf = None
+			
+			self.render_latex(src, img, pdf)
 			
 			# Add the image of the latex supplied
-			blocks.insert(0, "![%s](file://%s)"%(alt,img))
+			if link_pdf:
+				blocks.insert(0, "[![%s](file://%s)](file://%s)"%(alt,img,pdf))
+			else:
+				blocks.insert(0, "![%s](file://%s)"%(alt,img))
 
 
 class LaTeX(Extension):
