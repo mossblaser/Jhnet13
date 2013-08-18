@@ -62,8 +62,10 @@ class LaTeXBlockProcessor(BlockProcessor):
 		
 		\usepackage{graphicx}
 		
+		\usepackage{ifthen}
+		
 		\usepackage{tikz}
-		\usetikzlibrary{positioning}
+		\usetikzlibrary{positioning,backgrounds}
 		
 		${preamble}
 		
