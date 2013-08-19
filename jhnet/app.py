@@ -33,11 +33,12 @@ def site_path(path):
 # Alternating url_regex, handler_class_name strings
 urls = [
 	# The primary website sections
-	"/",               "index",
-	"/about",          "about",
-	"/projects(/.*|)", "projects",
-	"/articles(/.*|)", "articles",
-	"/misc(/.*|)",     "misc",
+	"/",                       "index",
+	"/about",                  "about",
+	"/projects/figures(/.*|)", "figures",
+	"/projects(/.*|)",         "projects",
+	"/articles(/.*|)",         "articles",
+	"/misc(/.*|)",             "misc",
 	
 	# Static resources live in these directories
 	"(/(?:img|css|js)/.*)", "static_resources",
@@ -92,6 +93,17 @@ about = static.StaticTemplate( about_template
                              , site_menu_active_name = "About Me"
                              , title = "About Me"
                              )
+
+# Figure repository, based on the publications system
+figures = publication.Publications( "/projects/figures"
+                                  , site_path("figures")
+                                  , "Figures"
+                                  , pub_listing_template
+                                  , pub_template
+                                  , site_menu = site_menu
+                                  , site_menu_active_name = "Projects"
+                                  , root_path = "/"
+                                  )
 
 # Project pages, based on the publications system
 projects = publication.Publications( "/projects"
