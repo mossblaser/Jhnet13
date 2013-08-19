@@ -64,8 +64,25 @@ class LaTeXBlockProcessor(BlockProcessor):
 		
 		\usepackage{ifthen}
 		
+		\usepackage[outline]{contour}
+		\contourlength{1.5pt}
+		
 		\usepackage{tikz}
-		\usetikzlibrary{positioning,backgrounds,shapes,calc}
+		\usepackage{tikz3d}
+		\usetikzlibrary{ hexagon
+		               , calc
+		               , backgrounds
+		               , positioning
+		               , decorations.pathreplacing
+		               , decorations.markings
+		               , arrows
+		               , positioning
+		               , automata
+		               , shadows
+		               , fit
+		               , shapes
+		               , arrows
+		               }
 		
 		${preamble}
 		
