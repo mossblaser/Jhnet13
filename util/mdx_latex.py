@@ -55,7 +55,7 @@ class LaTeXBlockProcessor(BlockProcessor):
 	LATEX_TEMPLATE = Template(r"""
 		%% Only build the bare minimum
 		%%\documentclass{minimal}
-		\documentclass[border=0pt]{standalone}
+		\documentclass[border=0pt,12pt]{standalone}
 		
 		\usepackage{amsmath}
 		\usepackage{amssymb}
@@ -65,7 +65,7 @@ class LaTeXBlockProcessor(BlockProcessor):
 		\usepackage{ifthen}
 		
 		\usepackage{tikz}
-		\usetikzlibrary{positioning,backgrounds}
+		\usetikzlibrary{positioning,backgrounds,shapes,calc}
 		
 		${preamble}
 		
