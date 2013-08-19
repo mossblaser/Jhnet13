@@ -36,11 +36,13 @@ import os
 
 from util import unique
 
-def process_markdown(input_markdown, output_name, latex_img_dir = "./", input_path = "./"):
+from subprocess import Popen
+
+def process_markdown(input_markdown, output_name, latex_img_dir = "./", input_path = "./", thumb_size=64):
 	"""
 	Produces the html file, toc file, meta file and a list of (local_file,
 	target_name) pairs where local_file is a file on the local system and
-	target_name is the name of the file when placed in [output_name]/*
+	target_name is the name of the file when placed in [output_name]/*.
 	"""
 	md = markdown.Markdown( extensions=[ 'meta'
 	                                   , 'codehilite'
@@ -84,7 +86,7 @@ def process_markdown(input_markdown, output_name, latex_img_dir = "./", input_pa
 	
 	# Get the image from the metadata
 	img = md.Meta.get("img", [None])[0]
-	img_alt = md.Meta.get("img_alt", [None])[0]
+	img_alt = md.Meta.get("img_alt", [title])[0]
 	
 	# The abstract should be taken to be the first paragraph.
 	abstract = md.abstract if md.abstract is not None else ""
@@ -97,13 +99,28 @@ def process_markdown(input_markdown, output_name, latex_img_dir = "./", input_pa
 	
 	files = md.resources
 	
-	# Add the article image to the list of files
+	# Add the article image to the list of files and create a thumbnail if
+	# possible.
 	if img is not None and img.startswith("file://"):
 		img = os.path.join(input_path, img[len("file://"):])
 		img_output_name = "%s/%s"%(output_name,
 		                           unique(os.path.basename(img),
 		                                  [f.split("/")[-1] for (_,f) in files]))
-		files.append((img, img_output_name))
+		
+		img_thumbnail = "%s.thumb.png"%img
+		
+		p = Popen( ["convert"
+		           , img
+		           , "-thumbnail", "%dx%d"%(thumb_size,thumb_size)
+		           , img_thumbnail]
+		         , stdin  = None
+		         , stdout = sys.stderr
+		         , stderr = sys.stderr
+		         )
+		if p.wait() != 0:
+			raise Exception("Creating img thumbnail failed.")
+		
+		files.append((img_thumbnail, img_output_name))
 		img = img_output_name
 	
 	# Generate meta-data
@@ -195,3 +212,4 @@ if __name__=="__main__":
 			sys.stderr.write("WARNING: Could not copy %s to %s: %s\n"%(
 				local_path, target_path, repr(e)
 			))
+			sys.exit(1)
