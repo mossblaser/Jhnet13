@@ -14,11 +14,12 @@ ln -s "$REPO_DIR/templates" templates
 ln -s "$REPO_DIR/static"    static
 
 # Make key directories for site content
-mkdir articles projects misc
+mkdir articles projects figures misc
 
 # Link accross READMEs
 ln -s "$REPO_DIR/articles/README.html" "articles/README.html"
 ln -s "$REPO_DIR/projects/README.html" "projects/README.html"
+ln -s "$REPO_DIR/figures/README.html"  "figures/README.html"
 ln -s "$REPO_DIR/misc/README.html"     "misc/README.html"
 
 # If not already got ToCs, create them
