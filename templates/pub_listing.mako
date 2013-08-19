@@ -1,5 +1,18 @@
 <%inherit file="normal.mako"/>
 
+<%block name="includes">
+	<link href="${root_path}css/pygments.css" rel="stylesheet">
+	<script type="text/javascript"
+		src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	</script>
+	<script type="text/javascript">
+		MathJax.Hub.Config({
+			"tex2jax": { inlineMath: [ [ '$', '$' ] ] }
+		});
+	</script>
+</%block>
+
+
 <h1>${heading}</h1>
 <!-- This is not a blog... -->
 
