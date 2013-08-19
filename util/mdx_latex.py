@@ -188,7 +188,7 @@ class LaTeXBlockProcessor(BlockProcessor):
 				shutil.copy(pdf_file, output_pdf_file)
 			
 			# Convert to PNG
-			p = Popen( ["convert", "-density", "110x110", pdf_file, output_png_file]
+			p = Popen( ["convert", "-density", "440", pdf_file, "-resize", "25%", output_png_file]
 			         , stdin  = None
 			         , stdout = sys.stderr
 			         , stderr = sys.stderr
