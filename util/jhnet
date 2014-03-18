@@ -94,7 +94,7 @@ function upload() {
 	# Upload files
 	TARGET="${@:$#}"
 	
-	rsync -czv --chmod=u+rwx,g+rwx,o+rx "${@:1:$(($#-1))}" "$JHNET_USER@$JHNET_SERVER:\"$TARGET\""
+	rsync -rczv --chmod=u+rwx,g+rwx,o+rx "${@:1:$(($#-1))}" "$JHNET_USER@$JHNET_SERVER:\"$TARGET\""
 }
 
 function remote() {
@@ -292,10 +292,10 @@ function pub_up() {
 		python "$UTIL_DIR/merge_meta.py" "$TMP_DIR/toc.json" "$TMP_DIR/$PUB_URL.meta"
 		
 		# Upload everything again
-		upload -r "$TMP_DIR/toc.json" \
-		          "$TMP_DIR/$PUB_URL/" \
-		          "$TMP_DIR/$PUB_URL."{html,toc,meta} \
-		          "$JHNET_PUB_DIR/$PUB_LOCATION/"
+		upload "$TMP_DIR/toc.json" \
+		       "$TMP_DIR/$PUB_URL" \
+		       "$TMP_DIR/$PUB_URL."{html,toc,meta} \
+		       "$JHNET_PUB_DIR/$PUB_LOCATION/"
 		
 		OUT_URL="$JHNET_PUB_URL/$PUB_LOCATION/$PUB_URL"
 	fi
