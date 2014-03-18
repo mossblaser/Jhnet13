@@ -94,7 +94,7 @@ function upload() {
 	# Upload files
 	TARGET="${@:$#}"
 	
-	scp "${@:1:$(($#-1))}" "$JHNET_USER@$JHNET_SERVER:\"$TARGET\""
+	rsync -czv --chmod=u+rwx,g+rwx,o+rx "${@:1:$(($#-1))}" "$JHNET_USER@$JHNET_SERVER:\"$TARGET\""
 }
 
 function remote() {

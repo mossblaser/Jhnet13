@@ -220,8 +220,6 @@ if __name__=="__main__":
 	# Copy includes into the output directory
 	for path in includes:
 		dest = os.path.join(output_path, output_name, os.path.basename(path.rstrip("/")))
-		print output_name, output_path
-		print path,dest
 		try:
 			shutil.copytree(path, dest)
 		except OSError as exc:
