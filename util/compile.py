@@ -94,6 +94,9 @@ def process_markdown(input_markdown, output_name, latex_img_dir = "./", input_pa
 	# Get the list of tags
 	tags = md.Meta.get("tags", [])
 	
+	# Get the list of files to include
+	includes = md.Meta.get("include", [])
+	
 	# Get the show option
 	show = md.Meta.get("show", ["True"])[0] == "True"
 	
@@ -135,7 +138,7 @@ def process_markdown(input_markdown, output_name, latex_img_dir = "./", input_pa
 		"show" : show,
 	}
 	
-	return html, toc, meta_data, files
+	return html, toc, meta_data, files, includes
 	
 
 
@@ -174,11 +177,11 @@ if __name__=="__main__":
 	
 	output_file_name = os.path.join(output_path, output_name)
 	
-	html, toc, meta, files = process_markdown( input_markdown_file.read()
-	                                         , output_name
-	                                         , tex_image_path
-	                                         , os.path.dirname(input_markdown_file_name)
-	                                         )
+	html, toc, meta, files, includes = process_markdown( input_markdown_file.read()
+	                                                   , output_name
+	                                                   , tex_image_path
+	                                                   , os.path.dirname(input_markdown_file_name)
+	                                                   )
 	
 	# Make output file directory
 	try:
@@ -213,3 +216,16 @@ if __name__=="__main__":
 				local_path, target_path, repr(e)
 			))
 			sys.exit(1)
+	
+	# Copy includes into the output directory
+	for path in includes:
+		dest = os.path.join(output_path, output_name, os.path.basename(path.rstrip("/")))
+		print output_name, output_path
+		print path,dest
+		try:
+			shutil.copytree(path, dest)
+		except OSError as exc:
+			if exc.errno == errno.ENOTDIR:
+				shutil.copy(path, dest)
+			else:
+				raise
