@@ -227,7 +227,7 @@ function pub_rm() {
 		fi
 		
 		# Remove the entry for this URL
-		python "$UTIL_DIR/rm_meta.py" "$TMP_DIR/toc.json" "$PUB_URL"
+		python2 "$UTIL_DIR/rm_meta.py" "$TMP_DIR/toc.json" "$PUB_URL"
 		
 		# Upload the updated ToC
 		upload -q "$TMP_DIR/toc.json" \
@@ -271,7 +271,7 @@ function pub_up() {
 	trap "rm -rf \"$TMP_DIR\"" EXIT
 	
 	# Attempt compilation
-	python "$UTIL_DIR/compile.py" "$INPUT_FILE" "$TMP_DIR/$PUB_URL" || return $?
+	python2 "$UTIL_DIR/compile.py" "$INPUT_FILE" "$TMP_DIR/$PUB_URL" || return $?
 	
 	# Place in target location
 	if [ "$PUB_LOCATION" == "-" ]; then
@@ -289,7 +289,7 @@ function pub_up() {
 		fi
 		
 		# Add the publication to the site ToC
-		python "$UTIL_DIR/merge_meta.py" "$TMP_DIR/toc.json" "$TMP_DIR/$PUB_URL.meta"
+		python2 "$UTIL_DIR/merge_meta.py" "$TMP_DIR/toc.json" "$TMP_DIR/$PUB_URL.meta"
 		
 		# Upload everything again
 		upload "$TMP_DIR/toc.json" \
