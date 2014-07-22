@@ -61,8 +61,8 @@ class _StaticBase(object):
 				size = size or 0
 				size_f  = self.format_size(size)
 			
-			# Filter out the README
-			if file_name != "README.html":
+			# Filter out the README/dotfiles
+			if file_name != "README.html" and not file_name.startswith("."):
 				file_list.append((file_name, mtime_f, size_f, mtime, size))
 		
 		params = web.input()
