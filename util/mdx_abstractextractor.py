@@ -40,12 +40,12 @@ class AbstractExtractorTreeprocessor(Treeprocessor):
 
 class AbstractExtractor(Extension):
 	
-	def __init__(self, configs):
+	def __init__(self, **kwargs):
 		pass
 	
 	def extendMarkdown(self, md, md_globals):
 		md.treeprocessors.add('absextractor', AbstractExtractorTreeprocessor(md), '_end')
 
 
-def makeExtension(configs=None):
-	return AbstractExtractor(configs or [])
+def makeExtension(**kwargs):
+	return AbstractExtractor(**kwargs)

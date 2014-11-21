@@ -94,6 +94,7 @@ function upload() {
 	# Upload files
 	TARGET="${@:$#}"
 	
+	echo rsync -rczv --chmod=u+rwx,g+rwx,o+rx "${@:1:$(($#-1))}" "$JHNET_USER@$JHNET_SERVER:\"$TARGET\""
 	rsync -rczv --chmod=u+rwx,g+rwx,o+rx "${@:1:$(($#-1))}" "$JHNET_USER@$JHNET_SERVER:\"$TARGET\""
 }
 

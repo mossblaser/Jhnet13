@@ -80,6 +80,6 @@ class ResourceExtractor(Extension):
 		)
 
 
-def makeExtension(configs=None):
-	return ResourceExtractor(configs or {})
+def makeExtension(**kwargs):
+	return ResourceExtractor(kwargs.get("configs", {}))
 

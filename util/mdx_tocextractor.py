@@ -60,12 +60,12 @@ class ToCExtractorTreeprocessor(Treeprocessor):
 
 class ToCExtractor(Extension):
 	
-	def __init__(self, configs):
+	def __init__(self, **kwargs):
 		pass
 	
 	def extendMarkdown(self, md, md_globals):
 		md.treeprocessors.add('tocextractor', ToCExtractorTreeprocessor(md), '_end')
 
 
-def makeExtension(configs=None):
-	return ToCExtractor(configs or [])
+def makeExtension(**kwargs):
+	return ToCExtractor(**kwargs)

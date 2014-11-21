@@ -272,6 +272,6 @@ class LaTeX(Extension):
 		md.parser.blockprocessors.add('latex', LaTeXBlockProcessor(self.configs, md.parser), '_begin')
 
 
-def makeExtension(configs=None):
-	return LaTeX(configs or [])
+def makeExtension(**kwargs):
+	return LaTeX(kwargs.get("configs", []))
 

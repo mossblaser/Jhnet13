@@ -38,6 +38,12 @@ from util import unique
 
 from subprocess import Popen
 
+from mdx_resourceextractor import ResourceExtractor
+from mdx_abstractextractor import AbstractExtractor
+from mdx_tocextractor      import ToCExtractor
+from mdx_mathjax           import MathJaxExtension
+from mdx_latex             import LaTeX
+
 def process_markdown(input_markdown, output_name, latex_img_dir = "./", input_path = "./", thumb_size=64):
 	"""
 	Produces the html file, toc file, meta file and a list of (local_file,
@@ -49,22 +55,16 @@ def process_markdown(input_markdown, output_name, latex_img_dir = "./", input_pa
 	                                   , 'tables'
 	                                   , 'def_list'
 	                                   , 'footnotes'
-	                                   , 'resourceextractor'
-	                                   , 'abstractextractor'
-	                                   , 'tocextractor'
-	                                   , 'mathjax'
-	                                   , 'latex'
+	                                   , ResourceExtractor({ "resource_dir": output_name
+	                                                       , "relative_path": input_path
+	                                                       })
+	                                   , AbstractExtractor()
+	                                   , ToCExtractor()
+	                                   , MathJaxExtension()
+	                                   , LaTeX({ "latex_img_dir": latex_img_dir
+	                                           , "input_path": input_path
+	                                           })
 	                                   ]
-	                      , extension_configs = {
-	                          "resourceextractor":
-	                            ( ("resource_dir",output_name)
-	                            , ("relative_path",input_path)
-	                            ),
-	                          "latex":
-	                            ( ("latex_img_dir",latex_img_dir)
-	                            , ("input_path", input_path)
-	                            ),
-	                        }
 	                      )
 	
 	# Basic HTML conversion
