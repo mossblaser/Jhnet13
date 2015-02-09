@@ -36,7 +36,11 @@ ${title} - Jhnet
 		<hr>
 		<p class="text-center muted">
 			<small>
-				&copy; 2013 Jonathan Heathcote
+				&copy;
+				<%
+					from datetime import date
+					context.write(str(date.today().year))
+				%> Jonathan Heathcote
 				## Include additional copyrights
 				<%
 					for ns in context.namespaces.values():
