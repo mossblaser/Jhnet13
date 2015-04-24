@@ -40,8 +40,10 @@ urls = [
 	"/articles(/.*|)",         "articles",
 	"/misc(/.*|)",             "misc",
 	
-	# Static resources live in these directories
-	"(/(?:img|css|js)/.*)", "static_resources",
+	# Static resources live in these directories (with the exception of the
+	# Google webmaster tools proof-of-ID token).
+	"(/(?:img|css|js)/.*)",           "static_resources",
+	"(/google537e774686e9608d.html)", "static_resources",
 	
 	# If in doubt, remove trailing slashes
 	"/(.*/)", "deslash.Deslash",
