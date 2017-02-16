@@ -8,7 +8,7 @@
 		<h2>Jonathan Heathcote</h2>
 		<p>I'm a computer scientist working for BBC Research and Development. In my
 		spare time I enjoy working on (often) technical projects and hiking with
-		Ann-Maire, my wonderful wife.</p>
+		Ann-Marie, my wonderful wife.</p>
 	</div>
 	
 	<div class="span3">
