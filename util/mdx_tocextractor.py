@@ -38,15 +38,16 @@ class ToCExtractorTreeprocessor(Treeprocessor):
 		levels = []
 		
 		for heading in headings:
+			heading_text = "".join(heading.itertext())
 			# Pick an ID
-			id = unique(slugify(heading.text, "-"), ids)
+			id = unique(slugify(heading_text, "-"), ids)
 			
 			# Assign the ID to the heading
 			heading.attrib["id"] = id
 			
 			# Record it
 			ids.append(id)
-			labels.append(heading.text)
+			labels.append(heading_text)
 			levels.append(int(heading.tag[1]))
 		
 		return zip(levels, labels, ids)
