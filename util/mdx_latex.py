@@ -23,7 +23,7 @@ The PNG file will be placed in the directory configs["latex_img_dir"].
 from markdown.blockprocessors import BlockProcessor
 from markdown.extensions      import Extension
 
-from markdown.extensions.headerid import slugify
+from util import slugify
 
 from mako.template import Template
 

@@ -7,9 +7,7 @@ Markdown extension which does toc extraction.
 from markdown.treeprocessors import Treeprocessor
 from markdown.extensions     import Extension
 
-from markdown.extensions.headerid import slugify
-
-from util import unique
+from util import unique, slugify
 
 class ToCExtractorTreeprocessor(Treeprocessor):
 	
