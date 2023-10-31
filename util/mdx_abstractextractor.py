@@ -6,6 +6,7 @@ Markdown extension which extracts the first paragraph (i.e. the abstract)
 
 from markdown.treeprocessors import Treeprocessor
 from markdown.extensions     import Extension
+from markdown.util           import HTML_PLACEHOLDER_RE
 
 class AbstractExtractorTreeprocessor(Treeprocessor):
 	
@@ -23,7 +24,7 @@ class AbstractExtractorTreeprocessor(Treeprocessor):
 		for child in root:
 			if child.tag == "p":
 				text = self.get_text(child)
-				if text.strip() != "":
+				if text.strip() != "" and HTML_PLACEHOLDER_RE.match(text) is None:
 					return text
 			
 			ch_abs = self.get_abstract(child)
@@ -43,8 +44,8 @@ class AbstractExtractor(Extension):
 	def __init__(self, **kwargs):
 		pass
 	
-	def extendMarkdown(self, md, md_globals):
-		md.treeprocessors.add('absextractor', AbstractExtractorTreeprocessor(md), '_end')
+	def extendMarkdown(self, md, md_globals={}):
+		md.treeprocessors.register(AbstractExtractorTreeprocessor(md), 'absextractor', -100)
 
 
 def makeExtension(**kwargs):

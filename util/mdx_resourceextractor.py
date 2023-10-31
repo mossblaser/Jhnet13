@@ -55,10 +55,10 @@ class ResourceExtractorTreeprocessor(Treeprocessor):
 		
 		
 		# Return with the resource dirs prefixed
-		return zip(local_file_paths,
-		           ( "%s/%s"%(self.configs["resource_dir"], dfn)
-		             for dfn in desired_file_names)
-		           )
+		return list(zip(local_file_paths,
+		                ( "%s/%s"%(self.configs["resource_dir"], dfn)
+		                  for dfn in desired_file_names)
+		                ))
 		
 	
 	
@@ -72,11 +72,11 @@ class ResourceExtractor(Extension):
 	def __init__(self, configs):
 		self.configs = dict(configs)
 	
-	def extendMarkdown(self, md, md_globals):
-		md.treeprocessors.add(
-			'resourceextractor',
+	def extendMarkdown(self, md, md_globals={}):
+		md.treeprocessors.register(
 			ResourceExtractorTreeprocessor(md, configs = self.configs),
-			'_end'
+			'resourceextractor',
+			0,
 		)
 
 

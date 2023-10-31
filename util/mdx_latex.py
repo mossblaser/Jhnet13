@@ -268,8 +268,8 @@ class LaTeX(Extension):
 	def __init__(self, configs):
 		self.configs = configs
 	
-	def extendMarkdown(self, md, md_globals):
-		md.parser.blockprocessors.add('latex', LaTeXBlockProcessor(self.configs, md.parser), '_begin')
+	def extendMarkdown(self, md, md_globals={}):
+		md.parser.blockprocessors.register(LaTeXBlockProcessor(self.configs, md.parser), 'latex', 9999)
 
 
 def makeExtension(**kwargs):

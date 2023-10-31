@@ -211,7 +211,7 @@ if __name__=="__main__":
 		target_path = os.path.join(output_path, target_path)
 		try:
 			shutil.copy(local_path, target_path)
-		except IOError, e:
+		except IOError as e:
 			sys.stderr.write("WARNING: Could not copy %s to %s: %s\n"%(
 				local_path, target_path, repr(e)
 			))

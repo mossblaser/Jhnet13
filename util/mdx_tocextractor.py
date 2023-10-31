@@ -48,7 +48,7 @@ class ToCExtractorTreeprocessor(Treeprocessor):
 			labels.append(heading_text)
 			levels.append(int(heading.tag[1]))
 		
-		return zip(levels, labels, ids)
+		return list(zip(levels, labels, ids))
 	
 	
 	def run(self, root):
@@ -62,8 +62,8 @@ class ToCExtractor(Extension):
 	def __init__(self, **kwargs):
 		pass
 	
-	def extendMarkdown(self, md, md_globals):
-		md.treeprocessors.add('tocextractor', ToCExtractorTreeprocessor(md), '_end')
+	def extendMarkdown(self, md, md_globals={}):
+		md.treeprocessors.register(ToCExtractorTreeprocessor(md), 'tocextractor', 0)
 
 
 def makeExtension(**kwargs):

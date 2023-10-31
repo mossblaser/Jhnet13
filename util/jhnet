@@ -94,8 +94,8 @@ function upload() {
 	# Upload files
 	TARGET="${@:$#}"
 	
-	echo rsync -rczv --chmod=u+rwx,g+rwx,o+rx "${@:1:$(($#-1))}" "$JHNET_USER@$JHNET_SERVER:\"$TARGET\""
-	rsync -rczv --chmod=u+rwx,g+rwx,o+rx "${@:1:$(($#-1))}" "$JHNET_USER@$JHNET_SERVER:\"$TARGET\""
+	echo rsync -rczv --chmod=u+rwx,g+rwx,o+rx "${@:1:$(($#-1))}" "$JHNET_USER@$JHNET_SERVER:$TARGET"
+	rsync -rczv --chmod=u+rwx,g+rwx,o+rx "${@:1:$(($#-1))}" "$JHNET_USER@$JHNET_SERVER:$TARGET"
 }
 
 function remote() {
@@ -228,7 +228,7 @@ function pub_rm() {
 		fi
 		
 		# Remove the entry for this URL
-		python2 "$UTIL_DIR/rm_meta.py" "$TMP_DIR/toc.json" "$PUB_URL"
+		python "$UTIL_DIR/rm_meta.py" "$TMP_DIR/toc.json" "$PUB_URL"
 		
 		# Upload the updated ToC
 		upload -q "$TMP_DIR/toc.json" \
@@ -272,7 +272,7 @@ function pub_up() {
 	trap "rm -rf \"$TMP_DIR\"" EXIT
 	
 	# Attempt compilation
-	python2 "$UTIL_DIR/compile.py" "$INPUT_FILE" "$TMP_DIR/$PUB_URL" || return $?
+	python "$UTIL_DIR/compile.py" "$INPUT_FILE" "$TMP_DIR/$PUB_URL" || return $?
 	
 	# Place in target location
 	if [ "$PUB_LOCATION" == "-" ]; then
@@ -290,7 +290,7 @@ function pub_up() {
 		fi
 		
 		# Add the publication to the site ToC
-		python2 "$UTIL_DIR/merge_meta.py" "$TMP_DIR/toc.json" "$TMP_DIR/$PUB_URL.meta"
+		python "$UTIL_DIR/merge_meta.py" "$TMP_DIR/toc.json" "$TMP_DIR/$PUB_URL.meta"
 		
 		# Upload everything again
 		upload "$TMP_DIR/toc.json" \
