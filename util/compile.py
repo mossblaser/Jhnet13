@@ -33,6 +33,7 @@ Produces:
 import markdown
 
 import os
+import errno
 
 from util import unique
 
